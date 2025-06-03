@@ -1,0 +1,269 @@
+body {
+background: linear-gradient(270deg, #222222, #0e0e0e, #1d1d1d, #1a1a1a, #1d1d1d);
+  background-size: 800% 800%;
+  animation: bgGradient 15s ease infinite;
+  color: white;
+  font-family: sans-serif;
+  margin: 0;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  font-size: 5rem;
+  font-weight: 900;
+  background: linear-gradient(45deg, #0ff, #f0f, #ff0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 
+    0 0 8px rgba(255, 255, 255, 0.6),
+    0 0 12px rgba(0, 255, 255, 0.7),
+    0 0 18px rgba(255, 0, 255, 0.7);
+  animation: flicker 3s infinite alternate ease-in-out;
+  margin-bottom: 2rem;
+}
+
+@keyframes flicker {
+  0%, 100% {
+    opacity: 1;
+    text-shadow:
+      0 0 8px rgba(255, 255, 255, 0.6),
+      0 0 12px rgba(0, 255, 255, 0.7),
+      0 0 18px rgba(255, 0, 255, 0.7);
+  }
+  50% {
+    opacity: 0.85;
+    text-shadow:
+      0 0 5px rgba(255, 255, 255, 0.4),
+      0 0 8px rgba(0, 255, 255, 0.5),
+      0 0 12px rgba(255, 0, 255, 0.5);
+  }
+}
+
+.grid {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.group-column {
+  display: grid;
+  grid-template-columns: repeat(2, 150px);
+  grid-template-rows: auto repeat(2, 150px); /* header + 2 rows for boxes */
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.group-column h2 {
+  grid-column: span 2;
+  grid-row: 1;
+  margin-bottom: 1rem;
+  font-size: 3rem;
+  color: rgb(255, 255, 255);
+  justify-self: center;
+  font-weight: 800;
+  background: linear-gradient(90deg, #ff00cc, #3333ff, #00ffcc);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  animation: hueShift 6s linear infinite;
+}
+
+@keyframes hueShift {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+.box {
+  width: 150px;
+  height: 150px;
+  background: #444;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+  display: block;
+}
+
+.box.active {
+  animation: pulseGlow 1.5s infinite ease-in-out,
+             colorShift 6s infinite linear;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+.box:hover {
+  animation: pulseGlow 1.5s infinite ease-in-out;
+  transform: scale(1.05);
+  background-color: #0f0;  /* same green as glow */
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 8px 2px #0f0;
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px 6px #0f0;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes colorShift {
+  0% { background-color: #ff007f; }
+  25% { background-color: #ff7f00; }
+  50% { background-color: #7fff00; }
+  75% { background-color: #00ff7f; }
+  100% { background-color: #ff007f; }
+}
+
+/* Effects panel */
+.effects {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 20px;
+  font-family: Arial, sans-serif;
+  color: white;
+  z-index: 1000;
+}
+
+#fxGroup, #eqGroup {
+  background: rgba(20, 20, 20, 0.9);
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #000;
+  width: 220px;
+  font-family: Arial, sans-serif;
+  color: white;
+}
+
+#fxGroup .effect,
+#eqGroup .effect {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#fxGroup label,
+#eqGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+#fxGroup input[type="range"],
+#eqGroup input[type="range"] {
+  width: 100%;
+}
+
+#eqGroup button {
+  width: 100%;
+  padding: 10px;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+#eqGroup button:hover {
+  background: #666;
+}
+
+/* Volume slider centered bottom */
+#volumeControl {
+  position: fixed;
+  top: 90%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-family: Arial, sans-serif;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  z-index: 1100;
+  width: 300px;
+}
+
+#volumeControl label {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+#volumeControl input[type="range"] {
+  width: 100%;
+}
+
+@keyframes bgGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+#spectrum {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* Let clicks through */
+  z-index: 0; /* Behind UI */
+}
+
+#oneShotsBtn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #222;
+  color: #0ff;
+  border: 2px solid #0ff;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 2000;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#oneShotsBtn:hover {
+  background-color: #0ff;
+  color: #222;
+}
+
+.toggle-btn {
+  margin-top: 10px;
+  width: 120px;        
+  padding: 10px;
+  background: #367c4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+  user-select: none;
+  align-self: center;
+}
+
+.toggle-btn:hover {
+  background: #53a174;
+}
+
+.toggle-btn.muted {
+  background: #f00; /* red when muted */
+}

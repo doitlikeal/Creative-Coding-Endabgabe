@@ -1,0 +1,97 @@
+/* styles.css */
+
+/* Remove margins and set background color */
+body {
+    margin: 0;
+    background-color: black;
+  }
+  
+  /* Optional: Customize the cursor color */
+  a-cursor {
+    color: #CCCCCC;
+  }
+  
+  
+  /* Make sure the button is not covered by A-Frame scene */
+#switchToSceneBtn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    z-index: 10; /* Make sure button is above the scene */
+    pointer-events: auto; /* Ensure button is clickable */
+  }
+  
+#bpmUI {
+  position: absolute;
+  top: 10px;
+  left: 30px; /* bisschen weiter rechts */
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  z-index: 1;
+  user-select: none;
+  gap: 12px;
+}
+
+#bpmDisplay {
+  display: inline-block;
+  width: 40px; /* feste Breite für die Zahl */
+  text-align: right;
+}
+#bpmSlider {
+  -webkit-appearance: none;
+  width: 200px;
+  height: 8px;
+  background: #444;
+  border-radius: 6px;
+  outline: none;
+  transition: background 0.3s ease;
+  cursor: pointer;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+/* Slider Track Hover */
+#bpmSlider:hover {
+  background: #666;
+}
+
+/* Slider Thumb */
+#bpmSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #4CC3D9;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px #4CC3D9;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  margin-top: -6px; /* zentriert auf der Bahn */
+}
+
+#bpmSlider::-webkit-slider-thumb:hover {
+  background: #33a7bf;
+  box-shadow: 0 0 12px #33a7bf;
+}
+
+/* Firefox */
+#bpmSlider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #4CC3D9;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px #4CC3D9;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+#bpmSlider::-moz-range-thumb:hover {
+  background: #33a7bf;
+  box-shadow: 0 0 12px #33a7bf;
+}

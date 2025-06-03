@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Loopy Loops</title>
+  <link rel="stylesheet" href="style2.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.39/Tone.min.js"></script>
+  <script src="script2.js" defer></script>
+</head>
+<body>
+  <h1>Loop Pad</h1>
+  <div class="grid">
+    <div class="group-column" id="drums">
+      <h2>Drums</h2>
+      <div class="box" data-group="drums" data-index="0"></div>
+      <div class="box" data-group="drums" data-index="1"></div>
+      <div class="box" data-group="drums" data-index="2"></div>
+      <div class="box" data-group="drums" data-index="3"></div>
+    </div>
+    <div class="group-column" id="bass">
+      <h2>Bass</h2>
+      <div class="box" data-group="bass" data-index="0"></div>
+      <div class="box" data-group="bass" data-index="1"></div>
+      <div class="box" data-group="bass" data-index="2"></div>
+      <div class="box" data-group="bass" data-index="3"></div>
+    </div>
+    <div class="group-column" id="pad">
+      <h2>Pad</h2>
+      <div class="box" data-group="pad" data-index="0"></div>
+      <div class="box" data-group="pad" data-index="1"></div>
+      <div class="box" data-group="pad" data-index="2"></div>
+      <div class="box" data-group="pad" data-index="3"></div>
+    </div>
+  </div>
+
+<canvas id="spectrum" width="800" height="100" style="display: block; margin: 0 auto 1rem auto;"></canvas>
+
+<button id="oneShotsBtn">One-Shots</button>
+
+
+  <!-- Effect Controls -->
+  <div class="effects">
+    <!-- Volume Group -->
+    <div id="volumeControl">
+      <label for="volumeSlider">Volume</label>
+      <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" />
+      <button id="muteBtn" class="toggle-btn">Mute</button>
+
+    </div>
+    <!-- FX group: Reverb, Delay, Pan -->
+    <div id="fxGroup">
+      <div class="effect">
+        <label for="reverbSlider">Reverb</label>
+        <input type="range" id="reverbSlider" min="0" max="1" step="0.01" value="0.2" />
+      </div>
+      <div class="effect">
+        <label for="delaySlider">Delay</label>
+        <input type="range" id="delaySlider" min="0" max="1" step="0.01" value="0.1" />
+      </div>
+      <div class="effect">
+        <label for="panSlider">Pan</label>
+        <input type="range" id="panSlider" min="-1" max="1" step="0.01" value="0" />
+      </div>
+    </div>
+
+    <!-- EQ group: Low, Mid, High + Toggle -->
+    <div id="eqGroup">
+      <div class="effect">
+        <label for="lowEQ">Low EQ (dB)</label>
+        <input type="range" id="lowEQ" min="-30" max="30" step="0.1" value="0" />
+      </div>
+      <div class="effect">
+        <label for="midEQ">Mid EQ (dB)</label>
+        <input type="range" id="midEQ" min="-30" max="30" step="0.1" value="0" />
+      </div>
+      <div class="effect">
+        <label for="highEQ">High EQ (dB)</label>
+        <input type="range" id="highEQ" min="-30" max="30" step="0.1" value="0" />
+      </div>
+      <button id="toggleEQ">On</button>
+    </div>
+  </div>
+  
+</body>
+</html>

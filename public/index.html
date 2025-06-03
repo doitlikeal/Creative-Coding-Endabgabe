@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <title>Drum Dominator</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="script.js" defer></script>
+  <script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+</head>
+<body>
+  <div id="bpmUI">
+    <label for="bpmSlider">BPM: <span id="bpmDisplay">100</span></label>
+    <input type="range" min="60" max="180" value="100" id="bpmSlider">
+  </div>
+
+  <a-scene background="color: black" networked-scene="room: drum-room; adapter: socketio; audio: true;">
+ 
+    <!-- Avatar Template für Spieler -->
+    <a-assets>
+      <template id="avatar-template">
+<script id="drum-template" type="text/html">
+  <a-entity>
+    <a-box color="#39BB82"></a-box>
+  </a-entity>
+</script>
+      </template>
+
+      <!-- Sound assets -->
+      <audio id="kick1" src="sounds/kick1.wav"></audio>
+      <audio id="snare1" src="sounds/snare1.wav"></audio>
+      <audio id="hihat1" src="sounds/hihat1.wav"></audio>
+      <audio id="crash1" src="sounds/crash1.wav"></audio>
+
+      <audio id="kick2" src="sounds/kick2.wav"></audio>
+      <audio id="snare2" src="sounds/snare2.wav"></audio>
+      <audio id="hihat2" src="sounds/hihat2.wav"></audio>
+      <audio id="crash2" src="sounds/crash2.wav"></audio>
+
+      <audio id="kick3" src="sounds/kick3.wav"></audio>
+      <audio id="snare3" src="sounds/snare3.wav"></audio>
+      <audio id="hihat3" src="sounds/hihat3.wav"></audio>
+      <audio id="crash3" src="sounds/crash3.wav"></audio>
+
+      <audio id="kick4" src="sounds/kick4.wav"></audio>
+      <audio id="snare4" src="sounds/snare4.wav"></audio>
+      <audio id="hihat4" src="sounds/hihat4.wav"></audio>
+      <audio id="crash4" src="sounds/crash4.wav"></audio>
+    </a-assets>
+
+      <!-- FPS Kamera mit Mauslook und WASD -->
+      <a-entity id="rig" movement-controls position="0 1.6 0">
+        <a-entity 
+          camera 
+          wasd-controls 
+          look-controls="pointerLockEnabled: true">
+          <!-- Fadenkreuz -->
+          <a-cursor 
+            fuse="false" 
+            color="white">
+          </a-cursor>
+        </a-entity>
+      </a-entity>
+
+    <!-- AREAL 1 -->
+    <a-entity id="areal-1" position="-10 0 0">
+    <a-text value="Beat 1" color="white" position="0 3 0" align="center" width="6"></a-text>
+
+      <a-box position="0 1 -3" color="#fc324a"  id="kick"
+             class="clickable"
+             drum-step="soundId: kick1; beatPattern: 0,3,5; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+
+      <a-box position="5 1 -3" color="#fc324a" id="snare"
+             class="clickable"
+             drum-step="soundId: snare1; beatPattern: 2,6; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+
+      <a-box position="-5 1 -3" color="#fc324a" id="crash"
+             class="clickable"
+             drum-step="soundId: crash1; beatPattern: 1,3,5,7; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+
+      <a-box position="0 4 -5" color="#fc324a" id="hihat"
+             class="clickable"
+             drum-step="soundId: hihat1; beatPattern: 0,1,2,3,4,5,6,7; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+    </a-entity>
+
+    <!-- AREAL 2 (gespiegelt auf X) -->
+    <a-entity id="areal-2" position="10 0 0">
+    <a-text value="Beat 2" color="white" position="0 3 0" align="center" width="6"></a-text>
+
+      <a-box position="0 1 -3" color="#fc324a"  id="kick"
+             class="clickable"
+             drum-step="soundId: kick2; beatPattern: 0,3,5; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+
+      <a-box position="5 1 -3" color="#fc324a" id="snare"
+             class="clickable"
+             drum-step="soundId: snare2; beatPattern: 2,6; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+
+      <a-box position="-5 1 -3" color="#fc324a" id="crash"
+             class="clickable"
+             drum-step="soundId: crash2; beatPattern: 1,3,5,7; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+
+      <a-box position="0 4 -5" color="#fc324a" id="hihat"
+             class="clickable"
+             drum-step="soundId: hihat2; beatPattern: 0,1,2,3,4,5,6,7; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+    </a-entity>
+
+    <!-- AREAL 3 (AREAL 1 gespiegelt auf Z = 10) -->
+    <a-entity id="areal-3" position="-10 0 10" rotation="0 180 0">
+    <a-text value="Beat 3" color="white" position="0 3 0" align="center" width="6"></a-text>
+
+      <a-box position="0 1 -3" color="#fc324a" id="kick"
+             class="clickable"
+             drum-step="soundId: kick3; beatPattern: 0,3,5; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+
+      <a-box position="5 1 -3" color="#fc324a" id="snare"
+             class="clickable"
+             drum-step="soundId: snare3; beatPattern: 2,6; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+
+      <a-box position="-5 1 -3" color="#fc324a" id="crash"
+             class="clickable"
+             drum-step="soundId: crash3; beatPattern: 1,3,5,7; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+
+      <a-box position="0 4 -5" color="#fc324a" id="hihat"
+             class="clickable"
+             drum-step="soundId: hihat3; beatPattern: 0,1,2,3,4,5,6,7; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+    </a-entity>
+
+    <!-- AREAL 4 (AREAL 2 gespiegelt auf Z = 10) -->
+    <a-entity id="areal-4" position="10 0 10" rotation="0 180 0">
+    <a-text value="Beat 4" color="white" position="0 3 0" align="center" width="6"></a-text>
+
+      <a-box position="0 1 -3" color="#fc324a" id="kick"
+             class="clickable"
+             drum-step="soundId: kick4; beatPattern: 0,3,5; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+
+      <a-box position="5 1 -3" color="#fc324a" id="snare"
+             class="clickable"
+             drum-step="soundId: snare4; beatPattern: 2,6; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+
+      <a-box position="-5 1 -3" color="#fc324a" id="crash"
+             class="clickable"
+             drum-step="soundId: crash4; beatPattern: 1,3,5,7; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+
+      <a-box position="0 4 -5" color="#fc324a" id="hihat"
+             class="clickable"
+             drum-step="soundId: hihat4; beatPattern: 0,1,2,3,4,5,6,7; beatModulo: 8" 
+             change-brightness-on-hover
+             networked="template: #drum-template; attachTemplateToLocal: false">
+      </a-box>
+    </a-entity>
+
+<a-box 
+  class="clickable"
+  position="0 0 -3"
+  width="1" height="1" depth="1"
+  color="#4CC3D9"
+  material="emissive: #4CC3D9; emissiveIntensity: 2"
+  event-set__enter="_event: mouseenter; material.emissive: #4CC3D9; material.emissiveIntensity: 5"
+  event-set__leave="_event: mouseleave; material.emissive: #000000; material.emissiveIntensity: 0.0"
+  onclick="window.location.href='loops.html';"
+></a-box>
+      <!-- Text drüber -->
+      <a-text 
+        value="Loop-Pad" 
+        align="center" 
+        color="white" 
+        width="6" 
+        position="0 1 -3"
+      ></a-text>
+
+<!-- Spawnpoint leuchtender Ring mit Glow-Simulation -->
+<a-ring position="0 0.1 5" rotation="-90 0 0" radius-inner="0.6" radius-outer="1" 
+  material="color: white; emissive: white; emissiveIntensity: 0.8; shader: flat; transparent: true; opacity: 0.7">
+</a-ring>
+
+<a-ring position="0 0.1 5" rotation="-90 0 0" radius-inner="1.1" radius-outer="1.3" 
+  material="color: white; emissive: white; emissiveIntensity: 0.5; shader: flat; transparent: true; opacity: 0.3">
+</a-ring>
+
+<a-ring position="0 0.1 5" rotation="-90 0 0" radius-inner="1.4" radius-outer="1.7" 
+  material="color: white; emissive: white; emissiveIntensity: 0.2; shader: flat; transparent: true; opacity: 0.15">
+</a-ring>
+
+    <!-- 🌟 STERNE -->
+<a-entity id="star-container"></a-entity>
+
+
+  </a-scene>
+</body>
+</html>
