@@ -174,7 +174,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   bpmSlider.addEventListener('input', (e) => {
     bpm = parseInt(e.target.value);
-    bpmDisplay.innerText = bpm + ' BPM';
+    bpmDisplay.innerText = bpm;
     updateBeatInterval();
   });
 });
