@@ -1,5 +1,5 @@
 body {
-background: linear-gradient(270deg, #222222, #0e0e0e, #1d1d1d, #1a1a1a, #1d1d1d);
+  background: linear-gradient(270deg, #222222, #0e0e0e, #1d1d1d, #1a1a1a, #1d1d1d);
   background-size: 800% 800%;
   animation: bgGradient 15s ease infinite;
   color: white;
@@ -16,10 +16,7 @@ h1 {
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  text-shadow: 
-    0 0 8px rgba(255, 255, 255, 0.6),
-    0 0 12px rgba(0, 255, 255, 0.7),
-    0 0 18px rgba(255, 0, 255, 0.7);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6), 0 0 12px rgba(0, 255, 255, 0.7), 0 0 18px rgba(255, 0, 255, 0.7);
   animation: flicker 3s infinite alternate ease-in-out;
   margin-bottom: 2rem;
 }
@@ -27,17 +24,11 @@ h1 {
 @keyframes flicker {
   0%, 100% {
     opacity: 1;
-    text-shadow:
-      0 0 8px rgba(255, 255, 255, 0.6),
-      0 0 12px rgba(0, 255, 255, 0.7),
-      0 0 18px rgba(255, 0, 255, 0.7);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.6), 0 0 12px rgba(0, 255, 255, 0.7), 0 0 18px rgba(255, 0, 255, 0.7);
   }
   50% {
     opacity: 0.85;
-    text-shadow:
-      0 0 5px rgba(255, 255, 255, 0.4),
-      0 0 8px rgba(0, 255, 255, 0.5),
-      0 0 12px rgba(255, 0, 255, 0.5);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.4), 0 0 8px rgba(0, 255, 255, 0.5), 0 0 12px rgba(255, 0, 255, 0.5);
   }
 }
 
@@ -46,12 +37,13 @@ h1 {
   justify-content: space-around;
   align-items: flex-start;
   gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .group-column {
   display: grid;
   grid-template-columns: repeat(2, 150px);
-  grid-template-rows: auto repeat(2, 150px); /* header + 2 rows for boxes */
+  grid-template-rows: auto repeat(2, 150px);
   gap: 10px;
   justify-content: center;
   margin-bottom: 2rem;
@@ -62,13 +54,11 @@ h1 {
   grid-row: 1;
   margin-bottom: 1rem;
   font-size: 3rem;
-  color: rgb(255, 255, 255);
-  justify-self: center;
+  color: transparent;
   font-weight: 800;
   background: linear-gradient(90deg, #ff00cc, #3333ff, #00ffcc);
   background-clip: text;
   -webkit-background-clip: text;
-  color: transparent;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
   animation: hueShift 6s linear infinite;
 }
@@ -90,8 +80,7 @@ h1 {
 }
 
 .box.active {
-  animation: pulseGlow 1.5s infinite ease-in-out,
-             colorShift 6s infinite linear;
+  animation: pulseGlow 1.5s infinite ease-in-out, colorShift 6s infinite linear;
   border-radius: 15px;
   cursor: pointer;
 }
@@ -99,7 +88,7 @@ h1 {
 .box:hover {
   animation: pulseGlow 1.5s infinite ease-in-out;
   transform: scale(1.05);
-  background-color: #0f0;  /* same green as glow */
+  background-color: #0f0;
 }
 
 @keyframes pulseGlow {
@@ -121,72 +110,14 @@ h1 {
   100% { background-color: #ff007f; }
 }
 
-/* Effects panel */
 .effects {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  gap: 20px;
-  font-family: Arial, sans-serif;
-  color: white;
-  z-index: 1000;
+  display: none;
 }
 
-#fxGroup, #eqGroup {
-  background: rgba(20, 20, 20, 0.9);
-  padding: 15px 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px #000;
-  width: 220px;
-  font-family: Arial, sans-serif;
-  color: white;
-}
-
-#fxGroup .effect,
-#eqGroup .effect {
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-#fxGroup label,
-#eqGroup label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-#fxGroup input[type="range"],
-#eqGroup input[type="range"] {
-  width: 100%;
-}
-
-#eqGroup button {
-  width: 100%;
-  padding: 10px;
-  background: #444;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: background 0.3s ease;
-}
-
-#eqGroup button:hover {
-  background: #666;
-}
-
-/* Volume slider centered bottom */
 #volumeControl {
   position: fixed;
-  top: 90%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  bottom: 50px;
+  left: 20px;
   color: white;
   font-family: Arial, sans-serif;
   background: transparent;
@@ -219,8 +150,8 @@ h1 {
   left: 0;
   width: 100vw;
   height: 100vh;
-  pointer-events: none; /* Let clicks through */
-  z-index: 0; /* Behind UI */
+  pointer-events: none;
+  z-index: 0;
 }
 
 #oneShotsBtn {
@@ -246,7 +177,7 @@ h1 {
 
 .toggle-btn {
   margin-top: 10px;
-  width: 120px;        
+  width: 120px;
   padding: 10px;
   background: #367c4d;
   color: white;
@@ -265,5 +196,137 @@ h1 {
 }
 
 .toggle-btn.muted {
-  background: #f00; /* red when muted */
+  background: #f00;
+}
+
+.collapsible-panels {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 20px;
+  z-index: 1000;
+}
+
+.collapsible {
+  width: 220px;
+  font-family: 'Orbitron', sans-serif;
+  color: white;
+  backdrop-filter: blur(8px);
+  background: rgba(30, 30, 30, 0.7);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+.collapsible-toggle {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg, #0ff, #00f);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.collapsible-toggle:hover {
+  filter: brightness(1.2);
+}
+
+.collapsible-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease, transform 0.4s ease;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 0 20px;
+  border-radius: 0 0 10px 10px;
+  color: white;
+  transform: translateX(100%);
+}
+
+.collapsible-content.open {
+  max-height: 500px;
+  padding: 15px 20px;
+  transform: translateX(0);
+}
+
+@media (max-width: 1024px) {
+  h1 {
+    font-size: 3.5rem;
+  }
+  .group-column {
+    grid-template-columns: repeat(2, 120px);
+    grid-template-rows: auto repeat(2, 120px);
+  }
+  .group-column h2 {
+    font-size: 2.2rem;
+  }
+  .box {
+    width: 120px;
+    height: 120px;
+  }
+  .collapsible-panels {
+    flex-direction: column;
+    right: 10px;
+    gap: 10px;
+  }
+  #volumeControl {
+    width: 250px;
+    left: 10%;
+  }
+  #oneShotsBtn {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 1rem;
+  }
+  h1 {
+    font-size: 2.5rem;
+  }
+  .grid {
+    flex-direction: column;
+    align-items: center;
+  }
+  .group-column {
+    grid-template-columns: repeat(2, 100px);
+    grid-template-rows: auto repeat(2, 100px);
+  }
+  .group-column h2 {
+    font-size: 1.8rem;
+  }
+  .box {
+    width: 100px;
+    height: 100px;
+  }
+  .collapsible-panels {
+    flex-direction: column;
+    gap: 10px;
+    bottom: 10px;
+    right: 10px;
+  }
+  #volumeControl {
+    width: 200px;
+    top: auto;
+    bottom: 50px;
+    left: 10%;
+  }
+  #oneShotsBtn {
+    font-size: 12px;
+    padding: 6px 10px;
+    top: 10px;
+    left: 10px;
+  }
+  .toggle-btn {
+    width: 100px;
+    padding: 8px;
+    font-size: 12px;
+  }
 }

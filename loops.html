@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Loopy Loops</title>
@@ -7,6 +8,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.39/Tone.min.js"></script>
   <script src="script2.js" defer></script>
 </head>
+
 <body>
   <h1>Loop Pad</h1>
   <div class="grid">
@@ -33,53 +35,66 @@
     </div>
   </div>
 
-<canvas id="spectrum" width="800" height="100" style="display: block; margin: 0 auto 1rem auto;"></canvas>
+  <canvas id="spectrum" width="800" height="100" style="display: block; margin: 0 auto 1rem auto;"></canvas>
+  <button id="oneShotsBtn">One-Shots</button>
 
-<button id="oneShotsBtn">One-Shots</button>
-
-
-  <!-- Effect Controls -->
-  <div class="effects">
-    <!-- Volume Group -->
-    <div id="volumeControl">
-      <label for="volumeSlider">Volume</label>
-      <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" />
-      <button id="muteBtn" class="toggle-btn">Mute</button>
-
-    </div>
-    <!-- FX group: Reverb, Delay, Pan -->
-    <div id="fxGroup">
-      <div class="effect">
-        <label for="reverbSlider">Reverb</label>
-        <input type="range" id="reverbSlider" min="0" max="1" step="0.01" value="0.2" />
-      </div>
-      <div class="effect">
-        <label for="delaySlider">Delay</label>
-        <input type="range" id="delaySlider" min="0" max="1" step="0.01" value="0.1" />
-      </div>
-      <div class="effect">
-        <label for="panSlider">Pan</label>
-        <input type="range" id="panSlider" min="-1" max="1" step="0.01" value="0" />
+  <!-- FX + EQ Panels Side by Side -->
+  <div class="collapsible-panels">
+    <div class="collapsible-wrapper">
+      <button class="collapsible-toggle">FX</button>
+      <div id="fxGroup" class="collapsible-content">
+        <div class="effect">
+          <label for="reverbSlider">Reverb</label>
+          <input type="range" id="reverbSlider" min="0" max="1" step="0.01" value="0.2" />
+        </div>
+        <div class="effect">
+          <label for="delaySlider">Delay</label>
+          <input type="range" id="delaySlider" min="0" max="1" step="0.01" value="0.1" />
+        </div>
+        <div class="effect">
+          <label for="panSlider">Pan</label>
+          <input type="range" id="panSlider" min="-1" max="1" step="0.01" value="0" />
+        </div>
       </div>
     </div>
 
-    <!-- EQ group: Low, Mid, High + Toggle -->
-    <div id="eqGroup">
-      <div class="effect">
-        <label for="lowEQ">Low EQ (dB)</label>
-        <input type="range" id="lowEQ" min="-30" max="30" step="0.1" value="0" />
+    <div class="collapsible-wrapper">
+      <button class="collapsible-toggle">EQ</button>
+      <div id="eqGroup" class="collapsible-content">
+        <div class="effect">
+          <label for="lowEQ">Low EQ (dB)</label>
+          <input type="range" id="lowEQ" min="-30" max="30" step="0.1" value="0" />
+        </div>
+        <div class="effect">
+          <label for="midEQ">Mid EQ (dB)</label>
+          <input type="range" id="midEQ" min="-30" max="30" step="0.1" value="0" />
+        </div>
+        <div class="effect">
+          <label for="highEQ">High EQ (dB)</label>
+          <input type="range" id="highEQ" min="-30" max="30" step="0.1" value="0" />
+        </div>
+        <button id="toggleEQ">On</button>
       </div>
-      <div class="effect">
-        <label for="midEQ">Mid EQ (dB)</label>
-        <input type="range" id="midEQ" min="-30" max="30" step="0.1" value="0" />
-      </div>
-      <div class="effect">
-        <label for="highEQ">High EQ (dB)</label>
-        <input type="range" id="highEQ" min="-30" max="30" step="0.1" value="0" />
-      </div>
-      <button id="toggleEQ">On</button>
     </div>
   </div>
-  
+
+  <!-- Volume Control -->
+  <div id="volumeControl">
+    <label for="volumeSlider">Volume</label>
+    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" />
+    <button id="muteBtn" class="toggle-btn">Mute</button>
+  </div>
+
+  <!-- Collapsible Logic Script -->
+  <script>
+    document.querySelectorAll('.collapsible-toggle').forEach(button => {
+      button.addEventListener('click', () => {
+        const content = button.nextElementSibling;
+        content.classList.toggle('open');
+      });
+    });
+  </script>
+
 </body>
+
 </html>
