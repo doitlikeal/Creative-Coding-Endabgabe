@@ -7,9 +7,6 @@
   <title>Drum Dominator</title>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="script.js" defer></script>
-  <script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
-
 </head>
 
 <body>
@@ -18,7 +15,7 @@
     <input type="range" min="60" max="180" value="100" id="bpmSlider">
   </div>
 
-  <a-scene background="color: black" networked-scene="room: drum-room; adapter: socketio; audio: true;">
+<a-scene background="color: black">
 
     <!-- Avatar Template für Spieler -->
     <a-assets>

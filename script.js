@@ -3,14 +3,15 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 const audioBuffers = {};
 
 // === WebSocket Setup ===
-const webRoomsWebSocketServerAddr = 'https://nosch.uber.space/web-rooms/';
 const socket = new WebSocket('wss://nosch.uber.space/web-rooms/');
-const myPlayerId = 'player_' + Math.random().toString(36).substr(2, 9);
+let myClientId = null;
+const roomName = 'drum-room';
 const otherPlayers = {};
 
 socket.addEventListener('open', () => {
   console.log('✅ WebSocket verbunden');
-  socket.send(JSON.stringify({ type: 'join', playerId: myPlayerId }));
+  socket.send(`*enter-room* ${roomName}`);
+  socket.send(`*subscribe-client-enter-exit*`);
 });
 
 socket.addEventListener('close', () => {
@@ -18,12 +19,12 @@ socket.addEventListener('close', () => {
 });
 
 socket.addEventListener('message', (event) => {
-  const data = JSON.parse(event.data);
-  handleMessageFromServer(data);
+  const msg = event.data;
+  handleWebRoomMessage(msg);
 });
 
 window.addEventListener('beforeunload', () => {
-  socket.send(JSON.stringify({ type: 'leave', playerId: myPlayerId }));
+  socket.send('*exit-room*');
 });
 
 // === Audio-Freischaltung bei User-Interaktion ===
@@ -61,10 +62,10 @@ function startGlobalClock() {
 function flashAllStarsRainbow() {
   if (!window.stars) return;
   window.stars.forEach((star, i) => {
-    const rainbowColors = ['#FF0000','#FF7F00','#FFFF00','#00FF00','#0000FF','#4B0082','#8B00FF'];
-    const color = rainbowColors[(i + Math.floor(Date.now()/100)) % rainbowColors.length];
-    star.setAttribute('material','emissive', color);
-    setTimeout(() => star && star.setAttribute('material','emissive','#FFFFFF'), 300);
+    const rainbowColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF'];
+    const color = rainbowColors[(i + Math.floor(Date.now() / 100)) % rainbowColors.length];
+    star.setAttribute('material', 'emissive', color);
+    setTimeout(() => star && star.setAttribute('material', 'emissive', '#FFFFFF'), 300);
   });
 }
 
@@ -155,100 +156,67 @@ AFRAME.registerComponent('drum-step', {
 
     el.addEventListener('click', () => {
       instr.isPlaying = !instr.isPlaying;
-      el.setAttribute('material','color', instr.isPlaying ? '#00FF00' : '#ffffff');
-      el.setAttribute('material','emissive','#000000');
+      el.setAttribute('material', 'color', instr.isPlaying ? '#00FF00' : '#ffffff');
+      el.setAttribute('material', 'emissive', '#000000');
       el.setAttribute('scale', originalScale);
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({
-          type: 'drumToggle', id: el.id, isPlaying: instr.isPlaying
-        }));
+
+      if (socket.readyState === WebSocket.OPEN && myClientId) {
+        const msg = JSON.stringify({ type: 'drumToggle', id: el.id, isPlaying: instr.isPlaying });
+        socket.send(`*broadcast-message* ${msg}`);
       }
     });
   }
 });
 
-function handleMessageFromServer(data) {
-  switch (data.type) {
-    case 'playerMove':
-      if (data.playerId !== myPlayerId) {
-        updateOrCreateOtherPlayer(data.playerId, data.payload);
-      }
-      break;
+function handleWebRoomMessage(message) {
+  if (message.startsWith('*client-id*')) {
+    myClientId = message.split(' ')[1];
+    console.log('🆔 My client ID:', myClientId);
+    return;
+  }
 
-    case 'drumToggle':
+  if (message.startsWith('*client-enter*')) {
+    const id = message.split(' ')[1];
+    console.log('👤 Client entered:', id);
+    return;
+  }
+
+  if (message.startsWith('*client-exit*')) {
+    const id = message.split(' ')[1];
+    console.log('🚪 Client left:', id);
+    const leftEl = otherPlayers[id];
+    if (leftEl) {
+      leftEl.parentNode.removeChild(leftEl);
+      delete otherPlayers[id];
+    }
+    return;
+  }
+
+  try {
+    if (!myClientId) return; // ignore messages until we know our ID
+
+    const data = JSON.parse(message);
+
+    if (data.type === 'drumToggle') {
       const el = document.getElementById(data.id);
       if (!el) return;
       const instr = instruments.find(i => i.el === el);
       if (instr) {
         instr.isPlaying = data.isPlaying;
-        el.setAttribute('material','color', instr.isPlaying ? '#00FF00' : '#ffffff');
-        el.setAttribute('material','emissive','#000000');
+        el.setAttribute('material', 'color', instr.isPlaying ? '#00FF00' : '#ffffff');
+        el.setAttribute('material', 'emissive', '#000000');
       }
-      break;
-
-    case 'join':
-      console.log(`${data.playerId} joined.`);
-      updateOrCreateOtherPlayer(data.playerId, {
-        position: { x: 0, y: 1.6, z: 0 },
-        rotation: { x: 0, y: 0, z: 0 }
-      });
-      break;
-
-    case 'leave':
-      console.log(`${data.playerId} left.`);
-      const leftEl = otherPlayers[data.playerId];
-      if (leftEl) {
-        leftEl.parentNode.removeChild(leftEl);
-        delete otherPlayers[data.playerId];
-      }
-      break;
-  }
-}
-
-function updateOrCreateOtherPlayer(id, payload) {
-  let el = otherPlayers[id];
-  if (!el) {
-    el = document.createElement('a-entity');
-    el.setAttribute('geometry','primitive: box; height:1.6; width:0.5; depth:0.5');
-    el.setAttribute('material','color:#0000ff; opacity:0.6');
-
-    const nameTag = document.createElement('a-text');
-    nameTag.setAttribute('value', id);
-    nameTag.setAttribute('align','center');
-    nameTag.setAttribute('color','#fff');
-    nameTag.setAttribute('position','0 1 0');
-    nameTag.setAttribute('scale','2 2 2');
-    el.appendChild(nameTag);
-
-    document.querySelector('#scene').appendChild(el);
-    otherPlayers[id] = el;
-  }
-  el.object3D.position.set(payload.position.x, payload.position.y, payload.position.z);
-  el.object3D.rotation.set(payload.rotation.x, payload.rotation.y, payload.rotation.z);
-}
-
-function sendPlayerPosition() {
-  const myEl = document.querySelector('#myPlayer');
-  if (!myEl) return;
-  const pos = myEl.object3D.position;
-  const rot = myEl.object3D.rotation;
-  socket.send(JSON.stringify({
-    type: 'playerMove',
-    playerId: myPlayerId,
-    payload: {
-      position: { x: pos.x, y: pos.y, z: pos.z },
-      rotation: { x: rot.x, y: rot.y, z: rot.z }
     }
-  }));
+
+    if (data.type === 'playerMove' && data.playerId !== myClientId) {
+      updateOrCreateOtherPlayer(data.playerId, data.payload);
+    }
+
+  } catch (err) {
+    // not a JSON message
+  }
 }
 
-setInterval(() => {
-  if (socket.readyState === WebSocket.OPEN) sendPlayerPosition();
-}, 100);
-
-startGlobalClock();
-
-// BPM-Slider & Stars initialisieren
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('bpmSlider').addEventListener('input', e => {
     bpm = parseInt(e.target.value);
@@ -270,16 +238,62 @@ function createStars(count = 20) {
     star.setAttribute('position', `${x.toFixed(2)} ${y.toFixed(2)} ${z.toFixed(2)}`);
     star.setAttribute('radius', size.toFixed(2));
     star.setAttribute('material', 'color:#FFFFFF; emissive:#FFFFFF; emissiveIntensity:0.8');
-    star.setAttribute('animation__pulse', {
-      property: 'scale', dir: 'alternate', dur: 3000 + Math.random() * 2000,
-      easing: 'easeInOutSine', loop: true,
-      to: `${(size * 1.5).toFixed(3)} ${(size * 1.5).toFixed(3)} ${(size * 1.5).toFixed(3)}`
-    });
-    star.setAttribute('animation__glow', {
-      property: 'material.emissiveIntensity', dir: 'alternate',
-      dur: 3000 + Math.random() * 2000, easing: 'easeInOutSine', loop: true, to: 1.5
-    });
     container.appendChild(star);
     window.stars.push(star);
   }
 }
+
+setInterval(() => {
+  if (socket.readyState !== WebSocket.OPEN || !myClientId) return;
+
+  const myEl = document.querySelector('#rig');
+  if (!myEl || !myEl.object3D) return;
+
+  const pos = myEl.object3D.position;
+  const rot = myEl.object3D.rotation;
+
+  const msg = JSON.stringify({
+    type: 'playerMove',
+    playerId: myClientId,
+    payload: {
+      position: { x: pos.x, y: pos.y, z: pos.z },
+      rotation: { x: rot.x, y: rot.y, z: rot.z }
+    }
+  });
+
+  socket.send(`*broadcast-message* ${msg}`);
+}, 100);
+
+function updateOrCreateOtherPlayer(id, payload) {
+  if (id === myClientId) return; // Don't create/update self
+
+  let el = otherPlayers[id];
+  if (!el) {
+    el = document.createElement('a-entity');
+    el.setAttribute('id', `player-${id}`);
+
+    const body = document.createElement('a-box');
+    body.setAttribute('height', '1.6');
+    body.setAttribute('width', '0.5');
+    body.setAttribute('depth', '0.5');
+    body.setAttribute('color', '#0000ff');
+    body.setAttribute('opacity', '0.7');
+    el.appendChild(body);
+
+    const nameTag = document.createElement('a-text');
+    nameTag.setAttribute('value', id);
+    nameTag.setAttribute('align', 'center');
+    nameTag.setAttribute('color', '#fff');
+    nameTag.setAttribute('position', '0 1.2 0');
+    nameTag.setAttribute('scale', '1 1 1');
+    el.appendChild(nameTag);
+
+    document.querySelector('a-scene').appendChild(el);
+    otherPlayers[id] = el;
+  }
+
+  el.setAttribute('position', `${payload.position.x} ${payload.position.y} ${payload.position.z}`);
+  el.setAttribute('rotation', `${payload.rotation.x} ${payload.rotation.y} ${payload.rotation.z}`);
+}
+
+startGlobalClock();
