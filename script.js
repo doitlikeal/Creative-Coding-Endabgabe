@@ -155,7 +155,7 @@ AFRAME.registerComponent('drum-step', {
 
     el.addEventListener('click', () => {
       instr.isPlaying = !instr.isPlaying;
-      el.setAttribute('material','color', instr.isPlaying ? '#00FF00' : '#fc324a');
+      el.setAttribute('material','color', instr.isPlaying ? '#00FF00' : '#ffffff');
       el.setAttribute('material','emissive','#000000');
       el.setAttribute('scale', originalScale);
       if (socket.readyState === WebSocket.OPEN) {
@@ -181,7 +181,7 @@ function handleMessageFromServer(data) {
       const instr = instruments.find(i => i.el === el);
       if (instr) {
         instr.isPlaying = data.isPlaying;
-        el.setAttribute('material','color', instr.isPlaying ? '#00FF00' : '#fc324a');
+        el.setAttribute('material','color', instr.isPlaying ? '#00FF00' : '#ffffff');
         el.setAttribute('material','emissive','#000000');
       }
       break;
@@ -258,7 +258,7 @@ window.addEventListener('DOMContentLoaded', () => {
   createStars();
 });
 
-function createStars(count = 10) {
+function createStars(count = 20) {
   const container = document.querySelector('#star-container');
   if (!container) return;
   for (let i = 0; i < count; i++) {
