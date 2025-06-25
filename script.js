@@ -48,6 +48,42 @@ let lastClientCount = 0;
 const instruments = [];
 window.stars = [];
 
+window.starClickCount = 0;
+
+let displayedCount = 0;
+
+function updateStarCounter() {
+  const counter = document.getElementById('star-counter');
+  if (!counter) return;
+
+  const target = window.starClickCount;
+  const duration = 400;
+  const frameRate = 30;
+  const steps = duration / (1000 / frameRate);
+  const increment = (target - displayedCount) / steps;
+
+  let current = displayedCount;
+  let frame = 0;
+
+  counter.classList.remove('animate');
+  void counter.offsetWidth;
+  counter.classList.add('animate');
+
+  const interval = setInterval(() => {
+    current += increment;
+    frame++;
+
+    if (frame >= steps) {
+      current = target;
+      clearInterval(interval);
+    }
+
+    counter.textContent = `⭐: ${Math.round(current)}`;
+    displayedCount = current;
+  }, 1000 / frameRate);
+}
+
+
 // === User Name Setup ===
 const clientNames = {};
 const NICKNAME_POOL = [
@@ -439,6 +475,8 @@ function createStars(count = 200) {
 
     // CLICK: Sound + Burst + Regenerate
     star.addEventListener('click', () => {
+      if (star.__hasBeenClicked) return; // ⛔ Already clicked this star
+      star.__hasBeenClicked = true;      // ✅ Mark as clicked
       // 🔊 Spatial pop sound
       if (starPopBuffer) {
         const source = audioCtx.createBufferSource();
@@ -476,6 +514,9 @@ function createStars(count = 200) {
       });
       container.appendChild(particles);
       setTimeout(() => container.removeChild(particles), 1000);
+
+      window.starClickCount++;
+      updateStarCounter();
 
       // 🎈 Pop + fade animation
       star.setAttribute('animation__pop', {
