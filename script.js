@@ -111,107 +111,130 @@ function connectToRoom(room) {
     let msg;
     try {
       msg = JSON.parse(event.data);
-    } catch (e) {
+    } catch (err) {
+      console.warn('Non-JSON message:', event.data);
       return;
     }
 
-    const selector = msg[0];
+    // Handle array-based messages
+    if (Array.isArray(msg)) {
+      const [selector, ...rest] = msg;
 
-    switch (selector) {
-      case '*client-id*': {
-        myClientId = String(msg[1]);
-        const nickname = getFixedNickname(myClientId); // Use fixed nickname
-        clientNames[myClientId] = nickname;
-        socket.send(JSON.stringify(['*broadcast-message*', ['nickname', myClientId, nickname]]));
-        break;
+      switch (selector) {
+        case '*client-id*': {
+          myClientId = String(rest[0]);
+          const nickname = getFixedNickname(myClientId);
+          clientNames[myClientId] = nickname;
+
+          updateClientIndex();
+          updateClientList();
+
+          // Tell everyone else my name
+          socket.send(JSON.stringify(['*broadcast-message*', ['nickname', myClientId, nickname]]));
+
+          // 🔁 Ask all existing clients to re-send their nicknames
+          // This triggers them to re-broadcast on your behalf
+          socket.send(JSON.stringify(['*broadcast-message*', ['nickname-request', myClientId]]));
+
+          break;
+        }
+
+        case 'nickname-request': {
+          const targetId = rest[0];
+          const myNickname = clientNames[myClientId];
+          if (myNickname && socket.readyState === WebSocket.OPEN) {
+            // Only send to the target client
+            socket.send(JSON.stringify([
+              '*direct-message*',
+              targetId,
+              ['nickname', myClientId, myNickname]
+            ]));
+          }
+          break;
+        }
+
+        case '*client-count*': {
+          const newCount = rest[0];
+          clientCount = newCount;
+
+          if (lastClientCount && newCount < lastClientCount) {
+            showClientNotice('👋 A player left the session.');
+          } else if (lastClientCount && newCount > lastClientCount) {
+            showClientNotice('🎉 A new player joined!');
+          }
+
+          lastClientCount = newCount;
+
+          // 💡 Reset clientNames to only my own ID
+          if (newCount === 1) {
+            for (let id in clientNames) {
+              if (id !== String(myClientId)) delete clientNames[id];
+            }
+          }
+
+          updateClientIndex();
+          updateClientList();
+          break;
+        }
+
+        case 'nickname': {
+          const [id, name] = rest;
+          clientNames[id] = name;
+
+          if (id === myClientId) {
+            updateClientIndex(); // ✅ update "You: ___"
+          }
+
+          updateClientList(); // ✅ update the full list
+          break;
+        }
+
+        case 'leave': {
+          const [id] = rest;
+          delete clientNames[id];
+          updateClientList();
+          break;
+        }
+
+        case 'move': {
+          const [clientId, position] = rest;
+          moveAvatar(clientId, position);
+          break;
+        }
+
+        case 'cubeClick': {
+          const [cubeId, clientId] = rest;
+          handleCubeClick(cubeId, clientId);
+          break;
+        }
       }
-      case '*client-count*':
-        clientCount = msg[1];
-        updateClientIndex();
+
+    } else if (typeof msg === 'object') {
+      // Handle object-based messages
+      if (msg.type === 'drumToggle') {
+        const el = document.getElementById(msg.id);
+        if (!el) return;
+        const instr = instruments.find(i => i.el === el);
+        if (instr) {
+          instr.isPlaying = msg.isPlaying;
+          el.setAttribute('material', 'color', instr.isPlaying ? '#00FF00' : '#ffffff');
+          el.setAttribute('material', 'emissive', '#000000');
+        }
+      } else if (msg.type === 'cubeClick') {
+        handleCubeClick(msg.cubeId, msg.clientId);
+      } else if (msg.type === 'clientName') {
+        clientNames[msg.clientId] = msg.name;
         updateClientList();
-        break;
-      case 'nickname': {
-        const id = msg[1];
-        const name = msg[2];
-        clientNames[id] = name;
-        break;
-      }
-      case 'leave': {
-        const id = msg[1];
-        delete clientNames[id];
-        break;
-      }
-      case 'move': {
-        const clientId = msg[1];
-        const position = msg[2];
-        moveAvatar(clientId, position); // Sync avatar's position across clients (if applicable)
-        break;
-      }
-      case 'cubeClick': {
-        const cubeId = msg[1];
-        const clientId = msg[2];
-        handleCubeClick(cubeId, clientId); // Handle cube click across all clients
-        break;
+        updateClientIndex();
       }
     }
   });
 
+  // Keep the connection alive
   setInterval(() => socket?.send(''), 30000);
 }
+
 connectToRoom(currentRoom);
-
-// === Handle WebSocket Messages ===
-socket.addEventListener('message', (event) => {
-  const msg = event.data;
-  console.log('WebSocket message received:', msg);
-
-  try {
-    const parsed = JSON.parse(msg);
-
-    if (Array.isArray(parsed)) {
-      const [selector, ...rest] = parsed;
-      switch (selector) {
-        case '*client-id*':
-          myClientId = rest[0] + 1;
-          const nickname = getFixedNickname(myClientId); // Use fixed nickname
-          clientNames[myClientId] = nickname;
-          updateClientIndex();
-          const nameMsg = JSON.stringify({ type: 'clientName', clientId: myClientId, name: nickname });
-          socket.send(`*broadcast-message* ${nameMsg}`);
-          break;
-        case '*client-count*':
-          const newCount = rest[0];
-          if (lastClientCount && newCount > lastClientCount) {
-            showClientNotice('🎉 A new player joined!');
-          } else if (lastClientCount && newCount < lastClientCount) {
-            showClientNotice('👋 A player left the session.');
-          }
-          lastClientCount = newCount;
-          clientCount = newCount;
-          updateClientIndex();
-          updateClientList();
-          break;
-      }
-    } else if (parsed.type === 'drumToggle') {
-      const el = document.getElementById(parsed.id);
-      if (!el) return;
-      const instr = instruments.find(i => i.el === el);
-      if (instr) {
-        instr.isPlaying = parsed.isPlaying;
-        el.setAttribute('material', 'color', instr.isPlaying ? '#00FF00' : '#ffffff');
-        el.setAttribute('material', 'emissive', '#000000');
-      }
-    } else if (parsed.type === 'cubeClick') {
-      handleCubeClick(parsed.cubeId, parsed.clientId); // Handle the cube click event
-    } else if (parsed.type === 'clientName') {
-      clientNames[parsed.clientId] = parsed.name;
-      updateClientIndex();
-      updateClientList();
-    }
-  } catch (err) {
-    console.warn('Non-JSON message:', msg);
-  }
-});
 
 // === Handle Cube Clicks ===
 // This function is used to handle cube clicks both locally and from other clients.
