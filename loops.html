@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loopy Loops</title>
   <link rel="stylesheet" href="style2.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.39/Tone.min.js"></script>
@@ -35,8 +35,16 @@
     </div>
   </div>
 
+  <div id="chat-container">
+    <button id="chat-toggle">Chat ⬇</button>
+    <div id="chat-panel" class="collapsed">
+      <div id="chat-messages"></div>
+      <input type="text" id="chat-input" placeholder="Type your message..." autocomplete="off">
+    </div>
+  </div>
+
   <canvas id="spectrum" width="800" height="100" style="display: block; margin: 0 auto 1rem auto;"></canvas>
-  <button id="oneShotsBtn">One-Shots</button>
+  <button id="oneShotsBtn">Drum Dominator</button>
 
   <!-- FX + EQ Panels Side by Side -->
   <div class="collapsible-panels">
@@ -78,12 +86,13 @@
     </div>
   </div>
 
-  <!-- Volume Control -->
   <div id="volumeControl">
-    <label for="volumeSlider">Volume</label>
+    <label for="volumeSlider"></label>
     <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" />
+    <div id="volumeValue">Volume: 100%</div>
     <button id="muteBtn" class="toggle-btn">Mute</button>
   </div>
+
 
   <!-- Collapsible Logic Script -->
   <script>
